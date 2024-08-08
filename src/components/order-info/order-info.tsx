@@ -1,44 +1,39 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo, useEffect, useState } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient, TOrder } from '@utils-types';
-import { useDispatch, useSelector } from '../../services/store';
-import { ingredientsSelector } from '../../services/ingredients/slice';
-import { getOrderByNum } from '../../services/order/action';
+import { TIngredient } from '@utils-types';
 import { useParams } from 'react-router-dom';
-import { orderModalSelector, ordersSelector } from '../../services/order/slice';
+import { useSelector, useDispatch } from '../../services/store';
+import { getOrders } from '../../services/slices/profileOrdersSlice';
+import { getIngredientState } from '../../services/slices/burgerIngredientSlice';
+import { getOrderByNumberApi } from '@api';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
+  const [orderData, setOrderData] = useState({
+    _id: '',
+    status: '',
+    name: '',
+    createdAt: '',
+    updatedAt: '',
+    number: 0,
+    ingredients: ['']
+  });
   const dispatch = useDispatch();
-  const param = useParams();
-  const number = Number(param.number);
-  const [orderData, setOrderData] = useState<TOrder | null>(null);
-  const ingredients: TIngredient[] = useSelector(ingredientsSelector);
-  const modalData = useSelector(orderModalSelector);
-  const data = useSelector(ordersSelector);
-  useEffect(() => {
-    if (number) {
-      const order: TOrder | undefined = data.find(
-        (item) => item.number === number
-      );
+  const { number } = useParams();
 
-      if (order) {
-        setOrderData(order);
-      } else {
-        dispatch(getOrderByNum(number));
-      }
-    }
-  }, [dispatch, number]);
   useEffect(() => {
-    if (modalData && modalData.number === number) {
-      setOrderData(modalData);
-    }
-  }, [modalData, number]);
+    getOrderByNumberApi(Number(number)).then((data) =>
+      setOrderData(data.orders[0])
+    );
+  }, []);
+
+  const ingredients = useSelector(getIngredientState);
+
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
     const date = new Date(orderData.createdAt);
+    const numberOrder = orderData.number;
 
     type TIngredientsWithCount = {
       [key: string]: TIngredient & { count: number };
@@ -72,12 +67,13 @@ export const OrderInfo: FC = () => {
       ...orderData,
       ingredientsInfo,
       date,
-      total
+      total,
+      numberOrder
     };
   }, [orderData, ingredients]);
 
   if (!orderInfo) {
-    return;
+    return <Preloader />;
   }
 
   return <OrderInfoUI orderInfo={orderInfo} />;

@@ -1,10 +1,9 @@
 import { FC } from 'react';
 import { AppHeaderUI } from '@ui';
 import { useSelector } from '../../services/store';
-import { UserNameSelector } from '../../services/auth/slice';
+import { getUser } from '../../services/slices/authorizationSlice';
 
 export const AppHeader: FC = () => {
-  const userName = useSelector(UserNameSelector);
-
-  return <AppHeaderUI userName={userName ? userName : 'Личный кабинет'} />;
+  const user = useSelector(getUser);
+  return <AppHeaderUI userName={user?.name} />;
 };
