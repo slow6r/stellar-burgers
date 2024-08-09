@@ -8,8 +8,7 @@
 
 .elements {
   min-height: 100px;
-
-  overflow-y: scroll;
+  overflow-y: overlay;
   list-style-type: none;
   margin: 0;
   padding: 0;
