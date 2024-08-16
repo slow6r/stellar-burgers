@@ -14,7 +14,7 @@ type TBurgerIngredientsState = {
   error: string | null;
 };
 
-const initialState: TBurgerIngredientsState = {
+export const initialState: TBurgerIngredientsState = {
   ingredients: [],
   isIngredientLoading: false,
   error: null
