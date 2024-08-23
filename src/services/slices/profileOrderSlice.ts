@@ -1,4 +1,8 @@
-import { TNewOrderResponse, orderBurgerApi, getOrderByNumberApi } from '@api';
+import {
+  TNewOrderResponse,
+  orderBurgerApi,
+  getOrderByNumberApi
+} from '../../utils/burger-api';
 import { PayloadAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
 
@@ -7,7 +11,7 @@ export type TProfileOrderState = {
   orderState: TOrder | null;
 };
 
-const initialState: TProfileOrderState = {
+export const initialState: TProfileOrderState = {
   orderRequest: false,
   orderState: null
 };
